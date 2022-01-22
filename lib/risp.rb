@@ -20,8 +20,8 @@ module Risp
   class Error < StandardError; end
 
   class Risp
-    def self.run
-      Risp::Interpreter.new.repl
+    def self.repl
+      Interpreter.new.repl
     end
   end
 end
