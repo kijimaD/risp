@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
-source 'https://rubygems.org'
+source "https://rubygems.org"
+
+# Specify your gem's dependencies in risp.gemspec
+gemspec
 
 gem 'sexp'
-
-group :test do
-end
+gem "rake"
+gem "rspec"
+gem "rubocop"
