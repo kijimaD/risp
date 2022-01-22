@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rparsec (1.0)
+    sexp (0.2.1)
+      rparsec (>= 1.0)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  sexp
+
+BUNDLED WITH
+   2.3.2
