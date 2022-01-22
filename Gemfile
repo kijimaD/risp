@@ -2,10 +2,9 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in risp.gemspec
-gemspec
-
-gem 'sexp'
+gem "pry-byebug"
 gem "rake"
 gem "rspec"
 gem "rubocop"
+gem 'sexp'
+gem 'thor'
