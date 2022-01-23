@@ -1,19 +1,17 @@
-module Risp
-  class Object
-    def lispeval(env, forms)
-      self
-    end
+class Object
+  def lispeval(env, forms)
+    self
+  end
 
-    def consify
-      self
-    end
+  def consify
+    self
+  end
 
-    def arrayify
-      self
-    end
+  def arrayify
+    self
+  end
 
-    def conslist?
-      false
-    end
+  def conslist?
+    false
   end
 end

@@ -8,6 +8,8 @@ module Risp
     def lispeval(env, forms)
       return forms.lookup(car).call(env, forms, *cdr.arrayify) if forms.defined?(car)
       func = car.lispeval(env, forms)
+      return func unless func.class == Proc
+
       return func.call(*cdr.arrayify.map{|x| x.lispeval(env, forms) })
     end
 

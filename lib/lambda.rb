@@ -9,8 +9,8 @@ module Risp
 
     def call(*args)
       raise "Expected #{@params.size} arguments" unless args.size == @params.size
-      newenv = Env.new(@env)
-      newforms = Env.new(@forms)
+      newenv = Risp::Env.new(@env)
+      newforms = Risp::Env.new(@forms)
       @params.zip(args).each do |sym, value|
         newenv.define(sym, value)
       end
