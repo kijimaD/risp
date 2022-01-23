@@ -1,6 +1,13 @@
 module Risp
   class Cons
     attr_reader :car, :cdr
+
+    def self.from_a(args)
+      head, *tail = args
+      return :nil unless head
+      new(head, from_a(tail))
+    end
+
     def initialize(car, cdr)
       @car, @cdr = car, cdr
     end

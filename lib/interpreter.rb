@@ -52,7 +52,7 @@ module Risp
       :ruby => lambda {|env, forms, name|
         Kernel.const_get(name)
       },
-             :"!" => lambda {|env, forms, object, message, *params|
+      :"!" => lambda {|env, forms, object, message, *params|
         evaled_params = params.map{|p| p.lispeval(env, forms).arrayify }
         proc = nil
         proc = evaled_params.pop if evaled_params.last.kind_of?(Lambda)
