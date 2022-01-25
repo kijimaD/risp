@@ -1,6 +1,8 @@
 RSpec.describe Risp::Interpreter do
   let(:risp) { Risp::Interpreter.new }
 
+  # default functions
+
   describe 'nil' do
     it 'return :nil' do
       expect(risp.eval('(nil)')).to eq :nil
@@ -93,6 +95,45 @@ RSpec.describe Risp::Interpreter do
   describe 'print' do
     specify do
       expect(risp.eval('(print "aaa")')). to eq :nil
+    end
+  end
+
+  # forms
+
+  describe 'quote' do
+    specify do
+      expect(risp.eval('(quote aaa)')).to eq :aaa
+    end
+  end
+
+  describe 'define' do
+    specify do
+      risp.eval('(define aaa 111)')
+      expect(risp.eval('(aaa)')).to eq 111
+    end
+  end
+
+  describe 'define' do
+    specify do
+
+    end
+  end
+
+  describe 'define' do
+    specify do
+
+    end
+  end
+
+  describe 'define' do
+    specify do
+
+    end
+  end
+
+  describe 'define' do
+    specify do
+
     end
   end
 end
