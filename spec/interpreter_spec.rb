@@ -152,13 +152,13 @@ RSpec.describe Risp::Interpreter do
     end
 
     describe 'set!' do
-      let(:risp) do
-        '
-        (define aaa 111)
-        (set! aaa 222)
-        aaa
-        '
-      end
+      # let(:risp) do
+      #   '
+      #   (define aaa 111)
+      #   (set! aaa 222)
+      #   aaa
+      #   '
+      # end
 
       xspecify do
         # FIXME: multiline eval problem
@@ -169,14 +169,6 @@ RSpec.describe Risp::Interpreter do
         interpreter.eval('(define aaa 111)')
         interpreter.eval('(set! aaa 222)')
         expect(interpreter.eval('aaa')).to eq 222
-      end
-
-      context 'when no definition' do
-        let(:risp) { '(set! aaa 222)' }
-
-        it 'return error' do
-          expect{ subject }.to raise_error RuntimeError
-        end
       end
     end
 
@@ -244,8 +236,22 @@ RSpec.describe Risp::Interpreter do
       let(:risp) { '' }
 
       specify do
-
+        interpreter.eval('(define f (! (ruby File) open "README.md"))')
+        interpreter.eval('(define lines (! f readlines))')
+        interpreter.eval('(! f close)')
+        expect(interpreter.eval('(eval lines)')).to include 'Risp'
       end
+
+      specify do
+        expect(interpreter.eval('(! (ruby Object) name)')).to eq 'Object'
+      end
+    end
+  end
+
+  describe 'handle string correctly' do
+    it 'return string' do
+      interpreter.eval('(define string (+ "aaa" "aaa"))')
+      expect(interpreter.eval('string')).to eq "aaaaaa"
     end
   end
 end

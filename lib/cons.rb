@@ -14,10 +14,15 @@ module Risp
 
     def lispeval(env, forms)
       return forms.lookup(car).call(env, forms, *cdr.arrayify) if forms.defined?(car)
+
       func = car.lispeval(env, forms)
       return func unless func.class == Proc
-
-      return func.call(*cdr.arrayify.map{|x| x.lispeval(env, forms) })
+      return func.call(*cdr.arrayify.map do |x|
+                         result = x.lispeval(env, forms)
+                         result = eval(result).join if result.class == String
+                         result
+                       end)
+      # MEMO: Fix "111" => "[\"1\", \"1\", \"1\"]" problem
     end
 
     def arrayify

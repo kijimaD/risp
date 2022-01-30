@@ -53,7 +53,12 @@ module Risp
         Kernel.const_get(name)
       },
       :"!" => lambda {|env, forms, object, message, *params|
-        evaled_params = params.map{|p| p.lispeval(env, forms).arrayify }
+        evaled_params = params.map do |p|
+          result = p.lispeval(env, forms).arrayify
+          eval(result).join if result.class == String
+        end
+        # MEMO: Fix "111" => "[\"1\", \"1\", \"1\"]" problem
+
         proc = nil
         proc = evaled_params.pop if evaled_params.last.kind_of?(Lambda)
         object.lispeval(env, forms).send(message, *evaled_params, &proc).consify
