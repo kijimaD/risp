@@ -166,17 +166,65 @@ RSpec.describe Risp::Interpreter do
       end
 
       specify do
-        interpreter.eval('define aaa 111')
-        interpreter.eval('set! aaa 222')
+        interpreter.eval('(define aaa 111)')
+        interpreter.eval('(set! aaa 222)')
         expect(interpreter.eval('aaa')).to eq 222
       end
 
-      it 'return error if no definition' do
-        expect{ risp.eval('(set! aaa 222)') }.to raise_error RuntimeError
+      context 'when no definition' do
+        let(:risp) { '(set! aaa 222)' }
+
+        it 'return error' do
+          expect{ subject }.to raise_error RuntimeError
+        end
       end
     end
 
     describe 'if' do
+      context 'when true condition' do
+        let(:risp) { '(if t 1 2)' }
+
+        it 'specify' do
+          expect(subject).to eq 1
+        end
+      end
+
+      context 'when false condition' do
+        let(:risp) { '(if nil 1 2)' }
+
+        specify do
+          expect(subject).to eq 2
+        end
+      end
+    end
+
+    describe 'lambda' do
+      let(:risp) { '(lambda (+ 1 2))' }
+
+      specify do
+        expect(subject.class).to eq Risp::Lambda
+      end
+    end
+
+    describe 'defmacro' do
+      let(:risp) { '' }
+
+      specify do
+        interpreter.eval('(defmacro unless (lambda (cond then else) (list (quote if) cond else then)))')
+        expect(interpreter.eval('(unless nil 1 2)')).to eq 1
+        expect(interpreter.eval('(unless t 1 2)')).to eq 2
+      end
+    end
+
+    describe 'eval' do
+      let(:risp) { '(eval (quote (+ 1 2)))' }
+
+      specify do
+        expect(subject).to eq 3
+      end
+    end
+
+    describe 'letmacro' do
       let(:risp) { '' }
 
       specify do
@@ -184,7 +232,7 @@ RSpec.describe Risp::Interpreter do
       end
     end
 
-    describe 'define' do
+    describe 'ruby' do
       let(:risp) { '' }
 
       specify do
@@ -192,7 +240,7 @@ RSpec.describe Risp::Interpreter do
       end
     end
 
-    describe 'define' do
+    describe '!' do
       let(:risp) { '' }
 
       specify do
