@@ -22,7 +22,7 @@ module Risp
     end
 
     def to_proc
-      return lambda{|*args| self.call(*args) }
+      return lambda { |*args| self.call(*args) }
     end
   end
 end
