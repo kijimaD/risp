@@ -1,139 +1,203 @@
 RSpec.describe Risp::Interpreter do
-  let(:risp) { Risp::Interpreter.new }
+  let(:interpreter) { Risp::Interpreter.new }
+  subject { interpreter.eval(risp) }
 
-  # default functions
+  describe  'Default Functions' do
+    describe 'nil' do
+      let(:risp) { '(nil)' }
 
-  describe 'nil' do
-    it 'return :nil' do
-      expect(risp.eval('(nil)')).to eq :nil
-    end
-  end
-
-  describe 't' do
-    specify do
-      expect(risp.eval('(t)')).to eq :t
-    end
-  end
-
-  describe '+' do
-    specify do
-      expect(risp.eval('(+ 1 1)')).to eq 2
-    end
-  end
-
-  describe '-' do
-    specify do
-      expect(risp.eval('(- 1 1)')).to eq 0
-    end
-  end
-
-  describe '*' do
-    specify do
-      expect(risp.eval('(* 1 1)')).to eq 1
-    end
-  end
-
-  describe '/' do
-    specify do
-      expect(risp.eval('(/ 1 1)')).to eq 1
-    end
-  end
-
-  describe 'car' do
-    specify do
-      expect(risp.eval('(car (list 1 2))')).to eq 1
-    end
-  end
-
-  describe 'cdr' do
-    specify do
-      expect(risp.eval('(cdr (list 1 2))').arrayify).to eq [2]
-    end
-  end
-
-  describe 'cons' do
-    specify do
-      expect(risp.eval('(cons 1 (cons 2 nil))').arrayify).to eq [1, 2]
-    end
-  end
-
-  describe 'atom?' do
-    context 'when list is atom' do
-      it 'return :t' do
-        expect(risp.eval('(atom? t)')).to eq :t
-      end
-    end
-
-    context 'when list is not atom' do
       it 'return :nil' do
-        expect(risp.eval('(atom? (cons 1 (cons 2 nil)))')).to eq :nil
+        expect(subject).to eq :nil
+      end
+    end
+
+    describe 't' do
+      let(:risp) { '(t)' }
+
+      specify do
+        expect(subject).to eq :t
+      end
+    end
+
+    describe '+' do
+      let(:risp) { '(+ 1 1)' }
+
+      specify do
+        expect(subject).to eq 2
+      end
+    end
+
+    describe '-' do
+      let(:risp) { '(- 1 1)' }
+
+      specify do
+        expect(subject).to eq 0
+      end
+    end
+
+    describe '*' do
+      let(:risp) { '(* 1 1)' }
+
+      specify do
+        expect(subject).to eq 1
+      end
+    end
+
+    describe '/' do
+      let(:risp) { '(/ 1 1)' }
+
+      specify do
+        expect(subject).to eq 1
+      end
+    end
+
+    describe 'car' do
+      let(:risp) { '(car (list 1 2))' }
+
+      specify do
+        expect(subject).to eq 1
+      end
+    end
+
+    describe 'cdr' do
+      let(:risp) { '(cdr (list 1 2))' }
+
+      specify do
+        expect(subject.arrayify).to eq [2]
+      end
+    end
+
+    describe 'cons' do
+      let(:risp) { '(cons 1 (cons 2 nil))' }
+
+      specify do
+        expect(subject.arrayify).to eq [1, 2]
+      end
+    end
+
+    describe 'atom?' do
+      let(:risp) { '(atom? t)' }
+
+      context 'when list is atom' do
+        it 'return :t' do
+          expect(subject).to eq :t
+        end
+      end
+
+      context 'when list is not atom' do
+        let(:risp) { '(atom? (cons 1 (cons 2 nil)))' }
+
+        it 'return :nil' do
+          expect(subject).to eq :nil
+        end
+      end
+    end
+
+    describe 'eq?' do
+      context 'when equal' do
+        let(:risp) { '(eq? 1 1)' }
+
+        it 'return :t' do
+          expect(subject).to eq :t
+        end
+      end
+
+      context 'when not equal' do
+        let(:risp) { '(eq? 1 2)' }
+
+        it 'return :nil' do
+          expect(subject).to eq :nil
+        end
+      end
+    end
+
+    describe 'list' do
+      let(:risp) { '(list 1 2)' }
+
+      specify do
+        expect(subject.class).to eq Risp::Cons
+        expect(subject.arrayify).to eq [1, 2]
+      end
+    end
+
+    describe 'print' do
+      let(:risp) { '(print "aaa")' }
+
+      specify do
+        expect(subject). to eq :nil
       end
     end
   end
 
-  describe 'eq?' do
-    context 'when equal' do
-      it 'return :t' do
-        expect(risp.eval('(eq? 1 1)')).to eq :t
+  describe  'Special Forms' do
+    describe 'quote' do
+      let(:risp) { '(quote aaa)' }
+
+      specify do
+        expect(subject).to eq :aaa
       end
     end
 
-    context 'when not equal' do
-      it 'return :nil' do
-        expect(risp.eval('(eq? 1 2)')).to eq :nil
+    describe 'define' do
+      let(:risp) do
+        '
+        (define aaa 111)
+        (aaa)
+        '
+      end
+
+      specify do
+        expect(subject).to eq 111
       end
     end
-  end
 
-  describe 'list' do
-    specify do
-      expect(risp.eval('(list 1 2)').class).to eq Risp::Cons
-      expect(risp.eval('(list 1 2)').arrayify).to eq [1, 2]
+    describe 'set!' do
+      let(:risp) do
+        '
+        (define aaa 111)
+        (set! aaa 222)
+        aaa
+        '
+      end
+
+      xspecify do
+        # FIXME: multiline eval problem
+        expect(subject).to eq 222
+      end
+
+      specify do
+        interpreter.eval('define aaa 111')
+        interpreter.eval('set! aaa 222')
+        expect(interpreter.eval('aaa')).to eq 222
+      end
+
+      it 'return error if no definition' do
+        expect{ risp.eval('(set! aaa 222)') }.to raise_error RuntimeError
+      end
     end
-  end
 
-  describe 'print' do
-    specify do
-      expect(risp.eval('(print "aaa")')). to eq :nil
+    describe 'if' do
+      let(:risp) { '' }
+
+      specify do
+
+      end
     end
-  end
 
-  # forms
+    describe 'define' do
+      let(:risp) { '' }
 
-  describe 'quote' do
-    specify do
-      expect(risp.eval('(quote aaa)')).to eq :aaa
+      specify do
+
+      end
     end
-  end
 
-  describe 'define' do
-    specify do
-      risp.eval('(define aaa 111)')
-      expect(risp.eval('(aaa)')).to eq 111
-    end
-  end
+    describe 'define' do
+      let(:risp) { '' }
 
-  describe 'define' do
-    specify do
+      specify do
 
-    end
-  end
-
-  describe 'define' do
-    specify do
-
-    end
-  end
-
-  describe 'define' do
-    specify do
-
-    end
-  end
-
-  describe 'define' do
-    specify do
-
+      end
     end
   end
 end
