@@ -1,8 +1,8 @@
 publish:
-	rake release
+	bundle exec rake release
 
 build:
-	rake install
+	bundle exec rake install
 repl:
 	make build
 	risp repl
